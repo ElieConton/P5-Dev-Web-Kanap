@@ -4,16 +4,25 @@
  * @returns 
  */
 
-function createArticle(item) {
-    const article = document.createElement('a')
-        article.setAttribute('href', `./product.html?id=${item._id}`)
-        article.innerHTML = `<article>
-        <img src="${item.imageUrl}" alt="${item.altTxt}">
-        <h3 class="productName">${item.name}</h3>
-        <p class="productDescription">${item.description}</p>
-        </article>
-    `
-    return article
+function createNewItem(item) {
+    const anchor = document.createElement('a')
+        anchor.setAttribute('href', `./product.html?id=${item._id}`)
+    const article = document.createElement('article')
+        anchor.appendChild(article)
+    const image = document.createElement('img')
+        article.appendChild(image)
+        image.src = `${item.imageUrl}`
+        image.alt = `${item.altTxt}`
+    const itemName = document.createElement('h3')
+        article.appendChild(itemName)
+        itemName.className = 'productName'
+        itemName.innerText = `${item.name}`
+    const description = document.createElement('p')
+        article.appendChild(description)
+        description.className = 'productDescription'
+        description.innerText = `${item.description}`
+
+    return anchor
 }
 
 async function main () {
@@ -25,7 +34,7 @@ async function main () {
     })
     const items = await r.json()
     for (let item of items) {
-    wrapper.append(createArticle(item))
+    wrapper.append(createNewItem(item))
     }
 }
  main()
