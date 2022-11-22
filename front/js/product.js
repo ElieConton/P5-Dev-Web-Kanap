@@ -4,7 +4,44 @@ let originalLink = new URL(window.location.href)
 let idLink = originalLink.searchParams.get('id')
 let productLink = 'http://localhost:3000/api/products/' + idLink
 
+//initialisation variable
+/*let productQuantity = 0
+let productStorage = {}
+let colorItem = document.querySelector("#colors").options[document.querySelector('#colors').selectedIndex].text
+let itemOnCart = {}
+let itemOnCartJson = JSON.stringify({})
+let colorItemEvent = document.querySelector("#colors")
+colorItemEvent.addEventListener('change', OnColorChange)
 
+let productQuantityEvent = document.querySelector('#quantity')
+productQuantityEvent.addEventListener('change', OnQuantityChange)*/
+
+const button = document.querySelector('#addToCart')
+button.addEventListener('click', addToCart)
+
+function addToCart () {
+    const quantity = parseInt(document.querySelector('#quantity').value);
+    
+    const color = document.querySelector('#colors').value;
+    
+    if (!quantity || !color) {
+        alert("séléctionner quantité et couleur !")
+    return
+    }
+    console.log({color, quantity})
+    let cart = localStorage.getItem('cart')
+    if (!cart) {
+        cart = []
+    } else {
+        cart = JSON.parse(cart)
+    }
+    localStorage.setItem('cart', cart)
+    // 
+    
+
+}
+
+main()
 
 
 /**
@@ -44,17 +81,11 @@ async function main () {
     const item = await r.json()
     displayItemSelected(item)
 }
- main()
+
 
  //essai récupération donnée item
 
-//initialisation variable
- let productQuantity = 0
- let productStorage = {}
- let colorItem = document.querySelector("#colors").options[document.querySelector('#colors').selectedIndex].text
- let itemOnCart = {}
- let itemOnCartJson = JSON.stringify({})
- 
+
  /**
   * A chaque changement de couleur dans le select #colors attribue le texte de l'option séléctionné par l'utilisateur
   */
@@ -83,14 +114,7 @@ async function main () {
      console.log(itemOnCart)
  }
  
- let colorItemEvent = document.querySelector("#colors")
- colorItemEvent.addEventListener('change', OnColorChange)
- 
- let productQuantityEvent = document.querySelector('#quantity')
- productQuantityEvent.addEventListener('change', OnQuantityChange)
- 
- 
- 
+
  //essai localStorage
 
 function itemLocalStorage () {
@@ -98,5 +122,3 @@ function itemLocalStorage () {
     localStorage.setItem("item", itemOnCartJson)
 }
 
-const button = document.querySelector('#addToCart')
-button.addEventListener('click', itemLocalStorage)
