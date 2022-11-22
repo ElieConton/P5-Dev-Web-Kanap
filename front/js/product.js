@@ -4,6 +4,9 @@ let originalLink = new URL(window.location.href)
 let idLink = originalLink.searchParams.get('id')
 let productLink = 'http://localhost:3000/api/products/' + idLink
 
+
+
+
 /**
  * Crée du contenu text et HTML pour représenter l'objet sélectionné
  * @param {{imageUrl: string, altText: string, name: string, description: string, colors: array of string}} item 
@@ -43,4 +46,57 @@ async function main () {
 }
  main()
 
+ //essai récupération donnée item
+
+//initialisation variable
+ let productQuantity = 0
+ let productStorage = {}
+ let colorItem = document.querySelector("#colors").options[document.querySelector('#colors').selectedIndex].text
+ let itemOnCart = {}
+ let itemOnCartJson = JSON.stringify({})
  
+ /**
+  * A chaque changement de couleur dans le select #colors attribue le texte de l'option séléctionné par l'utilisateur
+  */
+ function OnColorChange () {
+     colorItem = colorItemEvent.options[document.querySelector('#colors').selectedIndex].text
+     console.log(colorItem)
+     itemOnCart = {
+        id : idLink,
+        quantity : productQuantity,
+        color : colorItem
+     }
+     console.log(itemOnCart)
+ }
+ 
+ /**
+  * A chaque changement de quantité dans le input #quantity attribue le nombre séléctionné par l'utilisateur
+  */
+ function OnQuantityChange () {
+     productQuantity = parseInt(productQuantityEvent.value)
+     console.log(productQuantity)
+     itemOnCart = {
+        id : idLink,
+        quantity : productQuantity,
+        color : colorItem
+     }
+     console.log(itemOnCart)
+ }
+ 
+ let colorItemEvent = document.querySelector("#colors")
+ colorItemEvent.addEventListener('change', OnColorChange)
+ 
+ let productQuantityEvent = document.querySelector('#quantity')
+ productQuantityEvent.addEventListener('change', OnQuantityChange)
+ 
+ 
+ 
+ //essai localStorage
+
+function itemLocalStorage () {
+    let itemOnCartJson = JSON.stringify(itemOnCart)
+    localStorage.setItem("item", itemOnCartJson)
+}
+
+const button = document.querySelector('#addToCart')
+button.addEventListener('click', itemLocalStorage)
