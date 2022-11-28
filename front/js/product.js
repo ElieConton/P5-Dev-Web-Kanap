@@ -62,12 +62,12 @@ function displayItemSelected (item) {
         price.innerText = `${item.price}`
     const description = document.querySelector('#description')
         description.innerText = `${item.description}`
-    const colors = `${item.colors}`
-    const colorsArray = colors.split(',')
-    const colorWrapper = document.querySelector('#colors')
+    const colorsArray = `${item.colors}`.split(',')
     colorsArray.forEach(function(colorItem){
-        const optionColor = new Option (colorItem, colorItem)
-        colorWrapper.options[colorWrapper.options.length] = optionColor 
+        const colors = document.createElement('option')
+        document.querySelector('#colors').append(colors)
+        colors.innerText = colorItem
+        colors.value = colorItem
     })
     return
 }
