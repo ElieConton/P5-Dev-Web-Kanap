@@ -4,17 +4,6 @@ let originalLink = new URL(window.location.href)
 let idLink = originalLink.searchParams.get('id')
 let productLink = 'http://localhost:3000/api/products/' + idLink
 
-//initialisation variable
-/*let productQuantity = 0
-let productStorage = {}
-let colorItem = document.querySelector("#colors").options[document.querySelector('#colors').selectedIndex].text
-let itemOnCart = {}
-let itemOnCartJson = JSON.stringify({})
-let colorItemEvent = document.querySelector("#colors")
-colorItemEvent.addEventListener('change', OnColorChange)
-
-let productQuantityEvent = document.querySelector('#quantity')
-productQuantityEvent.addEventListener('change', OnQuantityChange)*/
 
 const button = document.querySelector('#addToCart')
 button.addEventListener('click', addToCart)
@@ -23,23 +12,44 @@ function addToCart () {
     const quantity = parseInt(document.querySelector('#quantity').value);
     
     const color = document.querySelector('#colors').value;
+    let otherProduct = true
+    const item = {
+        id : idLink,
+        quantity : quantity,
+        color : color
+    }
+
     
     if (!quantity || !color) {
         alert("séléctionner quantité et couleur !")
     return
     }
-    console.log({color, quantity})
     let cart = localStorage.getItem('cart')
     if (!cart) {
         cart = []
+        cart.push(item)
     } else {
         cart = JSON.parse(cart)
+        cart.forEach(function(items, ind) {
+            if (items.id == idLink && items.color == color) {
+                cart[ind].quantity = quantity + cart[ind].quantity
+                otherProduct = false
+            }
+        })
+        if (otherProduct){
+            cart.push(item)
+            otherProduct = true
+        }
     }
-    localStorage.setItem('cart', cart)
+    
+    localStorage.setItem('cart', JSON.stringify(cart))
+    }
+    
     // 
+
     
 
-}
+
 
 main()
 
@@ -83,42 +93,4 @@ async function main () {
 }
 
 
- //essai récupération donnée item
-
-
- /**
-  * A chaque changement de couleur dans le select #colors attribue le texte de l'option séléctionné par l'utilisateur
-  */
- function OnColorChange () {
-     colorItem = colorItemEvent.options[document.querySelector('#colors').selectedIndex].text
-     console.log(colorItem)
-     itemOnCart = {
-        id : idLink,
-        quantity : productQuantity,
-        color : colorItem
-     }
-     console.log(itemOnCart)
- }
  
- /**
-  * A chaque changement de quantité dans le input #quantity attribue le nombre séléctionné par l'utilisateur
-  */
- function OnQuantityChange () {
-     productQuantity = parseInt(productQuantityEvent.value)
-     console.log(productQuantity)
-     itemOnCart = {
-        id : idLink,
-        quantity : productQuantity,
-        color : colorItem
-     }
-     console.log(itemOnCart)
- }
- 
-
- //essai localStorage
-
-function itemLocalStorage () {
-    let itemOnCartJson = JSON.stringify(itemOnCart)
-    localStorage.setItem("item", itemOnCartJson)
-}
-
