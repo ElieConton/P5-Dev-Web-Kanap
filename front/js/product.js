@@ -7,41 +7,9 @@ let productLink = "http://localhost:3000/api/products/" + idLink;
 const button = document.querySelector("#addToCart");
 button.addEventListener("click", addToCart);
 
-function addToCart1() {
-  const quantity = parseInt(document.querySelector("#quantity").value);
 
-  const color = document.querySelector("#colors").value;
-  let otherProduct = true;
-  const item = {
-    id: idLink,
-    quantity: quantity,
-    color: color,
-  };
 
-  if (!quantity || !color) {
-    alert("séléctionner quantité et couleur !");
-    return;
-  }
-  let cart = localStorage.getItem("cart");
-  if (!cart) {
-    cart = [];
-    cart.push(item);
-  } else {
-    cart = JSON.parse(cart);
-    cart.forEach(function (items, ind) {
-      if (items.id == idLink && items.color == color) {
-        cart[ind].quantity = quantity + cart[ind].quantity;
-        otherProduct = false;
-      }
-    });
-    if (otherProduct) {
-      cart.push(item);
-      otherProduct = true;
-    }
-  }
-}
 
-//
 function addToCart() {
   const quantity = parseInt(document.querySelector("#quantity").value);
 
