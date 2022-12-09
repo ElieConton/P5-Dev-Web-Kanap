@@ -38,13 +38,11 @@ function displayItemsInCart(informationFromCart, informationFromLink) {
   article.dataset.id = informationFromCart.id;
   article.dataset.color = informationFromCart.color;
   article.appendChild(makeImage(informationFromLink));
-
+  article.appendChild(cartItemContent(informationFromCart, informationFromLink ));
   document.querySelector("#cart__items").appendChild(article);
 
-  const div2 = document.createElement("div");
-  article.appendChild(div2);
-  div2.classList = "cart__item__content";
-  const div3 = document.createElement("div");
+}
+ /* const div3 = document.createElement("div");
   div2.appendChild(div3);
   div3.classList = "cart__item__content__description";
   const h2 = document.createElement("h2");
@@ -64,7 +62,7 @@ function displayItemsInCart(informationFromCart, informationFromLink) {
   div5.classList = "cart__item__content__settings__quantity";
   const p2 = document.createElement("p");
   div5.appendChild(p2);
-  p2.innerText = `Qté: ${informationFromCart.quantity}`;
+  p2.innerText = `Qté: `;
   const input = document.createElement("input");
   input.addEventListener("change", (e) => {
     console.log(e);
@@ -75,7 +73,7 @@ function displayItemsInCart(informationFromCart, informationFromLink) {
   input.name = "itemQuantity";
   input.min = "1";
   input.max = "100";
-  input.value = "0";
+  input.value = `${informationFromCart.quantity}`;
   const div6 = document.createElement("div");
   div4.appendChild(div6);
   div6.classList = "cart__item__content__settings__delete";
@@ -83,7 +81,7 @@ function displayItemsInCart(informationFromCart, informationFromLink) {
   div4.appendChild(p3);
   p3.classList = "deleteItem";
   p3.innerText = "Supprimer";
-}
+}*/
 
 function makeImage(product) {
   const imageItem = document.createElement("div");
@@ -93,4 +91,56 @@ function makeImage(product) {
   img.alt = `${product.altTxt}`;
   imageItem.appendChild(img);
   return imageItem;
+}
+
+function cartItemContent(productFromCart, productFromLink) {
+  const itemContent = document.createElement("div");
+  itemContent.classList = "cart__item__content"
+  itemContent.appendChild(cartItemContentDescription(productFromLink))
+  itemContent.appendChild(cartItemContentSettings(productFromCart))
+  return itemContent
+}
+
+function cartItemContentDescription(product) {
+  const itemContentDescription = document.createElement("div")
+  itemContentDescription.classList = "cart__item__content__description"
+  const name = document.createElement("h2")
+  name.innerText = `${product.name}`
+  const color = document.createElement("p")
+  color.innerText = `${product.color}`
+  const price = document.createElement("p")
+  price.innerText = `${product.price}`
+  itemContentDescription.appendChild(name)
+  itemContentDescription.appendChild(color)
+  itemContentDescription.appendChild(price)
+  return itemContentDescription
+}
+
+function cartItemContentSettings(product) {
+  const itemContentSettings = document.createElement("div")
+  itemContentSettings.classList = "cart__item__content__settings"
+  const itemContentSettingsQuantity = document.createElement("div")
+  itemContentSettingsQuantity.classList = "cart__item__content__settings__quantity"
+  const quantity = document.createElement("p")
+  quantity.innerText = "Qté : "
+  const input = document.createElement("input")
+  input.addEventListener("change", (e) => {
+    console.log(e);
+  });
+  input.type = "number";
+  input.classList = "itemQuantity";
+  input.name = "itemQuantity";
+  input.min = "1";
+  input.max = "100";
+  input.value = `${product.quantity}`;
+  const itemContentSettingsDelete = document.createElement("div")
+  itemContentSettingsDelete.classList = "cart__item__content__settings__delete"
+  const itemDelete = document.createElement("p")
+  itemDelete.innerText = "Supprimer"
+  itemContentSettings.appendChild(itemContentSettingsQuantity)
+  itemContentSettings.appendChild(itemContentSettingsDelete)
+  itemContentSettingsQuantity.appendChild(quantity)
+  itemContentSettingsQuantity.appendChild(input)
+  itemContentSettingsDelete.appendChild(itemDelete)
+  return itemContentSettings
 }
