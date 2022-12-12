@@ -2,17 +2,18 @@ import { getCart, saveCart } from "./utils.js";
 let cart = getCart();
 let totalQuantity = 0;
 let totalPrice = 0;
+let changeQuantity = 0 ;
+let changePrice = 0;
 
 for (let item of cart) {
   const product = await fetchProduct(
     `http://localhost:3000/api/products/${item.id}`
   );
   displayItemsInCart(item, product);
-  totalQuantity = totalQuantity + item.quantity;
-  totalPrice = totalPrice + product.price * item.quantity;
-  document.querySelector("#totalQuantity").innerText = totalQuantity;
-  document.querySelector("#totalPrice").innerText = totalPrice;
+  total(item, product)
 }
+
+
 
 /**
  * fetch de chaque produit présent dans le panier pour récuperer les informations
@@ -57,7 +58,7 @@ function cartItemContent(productFromCart, productFromLink) {
   const itemContent = document.createElement("div");
   itemContent.classList = "cart__item__content"
   itemContent.appendChild(cartItemContentDescription(productFromCart, productFromLink))
-  itemContent.appendChild(cartItemContentSettings(productFromCart))
+  itemContent.appendChild(cartItemContentSettings(productFromCart, productFromLink))
   return itemContent
 }
 
@@ -76,7 +77,7 @@ function cartItemContentDescription(productFromCart, productFromLink) {
   return itemContentDescription
 }
 
-function cartItemContentSettings(product) {
+function cartItemContentSettings(productFromCart, productFromLink) {
   const itemContentSettings = document.createElement("div")
   itemContentSettings.classList = "cart__item__content__settings"
   const itemContentSettingsQuantity = document.createElement("div")
@@ -87,15 +88,16 @@ function cartItemContentSettings(product) {
   input.addEventListener("change", (e) => {
     const itemArticle = itemContentSettings.closest('article')
     const cartItem =  cart.find((p) => p.id === itemArticle.dataset.id && p.color === itemArticle.dataset.color);
-    cart[cart.indexOf(cartItem)].quantity = input.value
+    cart[cart.indexOf(cartItem)].quantity = parseInt(input.value)
     saveCart(cart)
+    totalChange(productFromLink)
   });
   input.type = "number";
   input.classList = "itemQuantity";
   input.name = "itemQuantity";
   input.min = "1";
   input.max = "100";
-  input.value = `${product.quantity}`;
+  input.value = `${productFromCart.quantity}`;
   const itemContentSettingsDelete = document.createElement("div")
   itemContentSettingsDelete.classList = "cart__item__content__settings__delete"
   const itemDelete = document.createElement("p")
@@ -106,6 +108,7 @@ function cartItemContentSettings(product) {
     const cartItem =  cart.find((p) => p.id === itemArticle.dataset.id && p.color === itemArticle.dataset.color);
     cart.splice(cart.indexOf(cartItem), 1 )
     saveCart(cart)
+    totalChange(productFromLink)
   });
   itemContentSettings.appendChild(itemContentSettingsQuantity)
   itemContentSettings.appendChild(itemContentSettingsDelete)
@@ -113,4 +116,25 @@ function cartItemContentSettings(product) {
   itemContentSettingsQuantity.appendChild(input)
   itemContentSettingsDelete.appendChild(itemDelete)
   return itemContentSettings
+}
+
+
+function total(item, product) {
+  totalQuantity = totalQuantity + item.quantity;
+  totalPrice = totalPrice + product.price * item.quantity;
+  document.querySelector("#totalQuantity").innerText = totalQuantity;
+  document.querySelector("#totalPrice").innerText = totalPrice;
+}
+
+function totalChange(productFromLink) {
+  for (let item of cart){
+    changeQuantity = changeQuantity + item.quantity
+    changePrice = changePrice + productFromLink.price * item.quantity
+  }
+  totalQuantity = changeQuantity
+  totalPrice = changePrice
+  document.querySelector("#totalQuantity").innerText = totalQuantity;
+  document.querySelector("#totalPrice").innerText = totalPrice;
+  changeQuantity = 0
+  changePrice = 0
 }
