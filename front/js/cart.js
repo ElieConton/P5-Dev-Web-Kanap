@@ -14,7 +14,27 @@ for (let item of cart) {
 }
 
 
+let form = document.querySelector('.cart__order__form')
 
+form.firstName.addEventListener('change', (e) =>{
+  validNameOrCity(firstName)
+})
+
+form.lastName.addEventListener('change', (e) =>{
+  validNameOrCity(lastName)
+})
+
+form.address.addEventListener('change', (e) =>{
+  validAddress(address)
+})
+
+form.city.addEventListener('change', (e) =>{
+  validNameOrCity(city)
+})
+
+form.email.addEventListener('change', (e) =>{
+  validEmail(email)
+})
 /**
  * fetch de chaque produit présent dans le panier pour récuperer les informations
  *
@@ -137,4 +157,40 @@ function totalChange(productFromLink) {
   document.querySelector("#totalPrice").innerText = totalPrice;
   changeQuantity = 0
   changePrice = 0
+}
+
+function validEmail(email) {
+  let emailRegExp = new RegExp(
+    '^[a-zA_Z0-9.-_]+[@]{1}[a-zA_Z0-9.-_]+[.]{1}[a-z]{2,10}$', 'g'
+  )
+  let testEmail = emailRegExp.test(email.value)
+  if(!testEmail){
+    document.querySelector('#emailErrorMsg').innerText = 'Adresse Email invalide'
+  }else {
+    document.querySelector('#emailErrorMsg').innerText = ''
+  }
+}
+
+function validNameOrCity(NameOrCity){
+  let NameOrCityRegExp = new RegExp(
+    '^[A-Z][A-Za-z\é\è\ê\-]+$'
+  )
+  let testNameOrcity = NameOrCityRegExp.test(NameOrCity.value)
+  if(!testNameOrcity){
+    document.querySelector(`#${NameOrCity.name}ErrorMsg`).innerText = `Champ invalide`
+  }else {
+    document.querySelector(`#${NameOrCity.name}ErrorMsg`).innerText = ''
+  }
+}
+
+function validAddress(address){
+  let addressRegExp = new RegExp(
+    "^[a-zA-Z0-9\s,'-]*$"
+  )
+  let testAddress = addressRegExp.test(address.value)
+  if(!testAddress){
+    document.querySelector('#addressErrorMsg').innerText = `Champ invalide`
+  }else {
+    document.querySelector('#addressErrorMsg').innerText = ''
+  }
 }
