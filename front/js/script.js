@@ -25,6 +25,9 @@ function createNewItem(item) {
     return anchor
 }
 
+/**
+ * fonction pour récuperer la liste des produits puis les afficher
+ */
 async function main () {
     const wrapper = document.querySelector('#items')
     const r = await fetch('http://localhost:3000/api/products' , {

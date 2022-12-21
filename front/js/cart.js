@@ -1,22 +1,61 @@
 import { getCart, saveCart } from "./utils.js";
+const addressRegExp = new RegExp('^[0-9]{1,5}(?:(?:[,. ])[-a-zA-Z]+)+');
+const nameOrCityRegExp = new RegExp("^[A-Z][A-Za-zéèê-]+$");
+const emailRegExp = new RegExp('^[a-zA-Z0-9._-]+[@]{1}[a-zA-Z0-9._-]+[.]{1}[a-z]{2,10}$');
 const cart = getCart();
 const products = [];
+const itemId = [];
+const form = document.querySelector(".cart__order__form");
+
 
 for (let item of cart) {
+  itemId.push(item.id);
   const product = await fetchProduct(
     `http://localhost:3000/api/products/${item.id}`
   );
   displayItemsInCart(item, product);
   products.push(product);
 }
-console.log(products);
+const productId = itemId;
 computeTotal();
-
-let form = document.querySelector(".cart__order__form");
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
-  console.log(form);
+  if (!nameOrCityRegExp.test(form.firstName.value) ||
+    !nameOrCityRegExp.test(form.lastName.value) ||
+    !addressRegExp.test(form.address.value) ||
+    !nameOrCityRegExp.test(form.city.value) ||
+    !emailRegExp.test(form.email.value)) {
+    alert("Formulaire invalide")
+    return
+  }
+  
+  const contact = {
+    firstName: form.firstName.value,
+    lastName: form.lastName.value,
+    address: form.address.value,
+    city: form.city.value,
+    email: form.email.value,
+  };
+  
+  const postForm = fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
+    body: JSON.stringify({ contact: contact, products: productId }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  postForm.then(async (r) => {
+    try {
+      const response = await r.json();
+      const urlcommande =
+        "http://127.0.0.1:5500/front/html/confirmation.html?orderId=" +
+        response.orderId;
+       document.location.href= urlcommande
+    } catch (e) {
+      console.log(e);
+    }
+  });
 });
 
 form.firstName.addEventListener("change", (e) => {
@@ -37,6 +76,7 @@ form.city.addEventListener("change", (e) => {
 
 form.email.addEventListener("change", (e) => {
   validEmail(email);
+  
 });
 /**
  * fetch de chaque produit présent dans le panier pour récuperer les informations
@@ -53,8 +93,8 @@ async function fetchProduct(url) {
 
 /**
  * fonction pour afficher les produits du panier
- * @param {*} informationFromCart
- * @param {*} informationFromLink
+ * @param {object} informationFromCart information provenant du panier 
+ * @param {object} informationFromLink information provenant du lien API 
  */
 function displayItemsInCart(informationFromCart, informationFromLink) {
   const article = document.createElement("article");
@@ -68,6 +108,11 @@ function displayItemsInCart(informationFromCart, informationFromLink) {
   document.querySelector("#cart__items").appendChild(article);
 }
 
+/**
+ * fonction pour afficher l'image des produits
+ * @param {object} product 
+ * @returns 
+ */
 function makeImage(product) {
   const imageItem = document.createElement("div");
   imageItem.classList = "cart__item__img";
@@ -78,6 +123,12 @@ function makeImage(product) {
   return imageItem;
 }
 
+/**
+ * fonction pour afficher le contenu des produits
+ * @param {object} productFromCart 
+ * @param {object} productFromLink 
+ * @returns 
+ */
 function cartItemContent(productFromCart, productFromLink) {
   const itemContent = document.createElement("div");
   itemContent.classList = "cart__item__content";
@@ -85,11 +136,17 @@ function cartItemContent(productFromCart, productFromLink) {
     cartItemContentDescription(productFromCart, productFromLink)
   );
   itemContent.appendChild(
-    cartItemContentSettings(productFromCart, productFromLink)
+    cartItemContentSettings(productFromCart)
   );
   return itemContent;
 }
 
+/**
+ * Fonction pour créer la description des produits
+ * @param {object} productFromCart 
+ * @param {object} productFromLink 
+ * @returns 
+ */
 function cartItemContentDescription(productFromCart, productFromLink) {
   const itemContentDescription = document.createElement("div");
   itemContentDescription.classList = "cart__item__content__description";
@@ -105,7 +162,14 @@ function cartItemContentDescription(productFromCart, productFromLink) {
   return itemContentDescription;
 }
 
-function cartItemContentSettings(productFromCart, productFromLink) {
+
+/**
+ * Fonction pour créer les paramètres des produits
+ * @param {object} productFromCart 
+ * @param {object} productFromLink 
+ * @returns 
+ */
+function cartItemContentSettings(productFromCart) {
   const itemContentSettings = document.createElement("div");
   itemContentSettings.classList = "cart__item__content__settings";
   const itemContentSettingsQuantity = document.createElement("div");
@@ -153,6 +217,9 @@ function cartItemContentSettings(productFromCart, productFromLink) {
   return itemContentSettings;
 }
 
+/**
+ * Fonction pour calculer et afficher la quantité totale de produit et le prix total
+ */
 function computeTotal() {
   const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
   document.querySelector("#totalQuantity").innerText = totalQuantity;
@@ -165,11 +232,11 @@ function computeTotal() {
   document.querySelector("#totalPrice").innerText = totalPrice;
 }
 
+/**
+ * Fonction pour valider l'email dans le formulaire
+ * @param {string} email 
+ */
 function validEmail(email) {
-  let emailRegExp = new RegExp(
-    "^[a-zA_Z0-9.-_]+[@]{1}[a-zA_Z0-9.-_]+[.]{1}[a-z]{2,10}$",
-    "g"
-  );
   let testEmail = emailRegExp.test(email.value);
   if (!testEmail) {
     document.querySelector("#emailErrorMsg").innerText =
@@ -179,23 +246,29 @@ function validEmail(email) {
   }
 }
 
-function validNameOrCity(NameOrCity) {
-  let NameOrCityRegExp = new RegExp("^[A-Z][A-Za-zéèê-]+$");
-  let testNameOrcity = NameOrCityRegExp.test(NameOrCity.value);
+/**
+ * Fonction pour valider les noms ou les noms de ville dans le formulaire
+ * @param {string} nameOrCity 
+ */
+function validNameOrCity(nameOrCity) {
+  let testNameOrcity = nameOrCityRegExp.test(nameOrCity.value);
   if (!testNameOrcity) {
     document.querySelector(
-      `#${NameOrCity.name}ErrorMsg`
+      `#${nameOrCity.name}ErrorMsg`
     ).innerText = `Champ invalide`;
   } else {
-    document.querySelector(`#${NameOrCity.name}ErrorMsg`).innerText = "";
+    document.querySelector(`#${nameOrCity.name}ErrorMsg`).innerText = "";
   }
 }
 
+/**
+ * Fonction pour valider l'adresse dans le formulaire
+ * @param {string} address 
+ */
 function validAddress(address) {
-  let addressRegExp = new RegExp("^[a-zA-Z0-9s,'-]*$");
   let testAddress = addressRegExp.test(address.value);
   if (!testAddress) {
-    document.querySelector("#addressErrorMsg").innerText = `Champ invalide`;
+    document.querySelector("#addressErrorMsg").innerText = `Adresse invalide`;
   } else {
     document.querySelector("#addressErrorMsg").innerText = "";
   }
