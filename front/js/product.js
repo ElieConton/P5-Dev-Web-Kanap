@@ -7,11 +7,9 @@ let productLink = "http://localhost:3000/api/products/" + idLink;
 const button = document.querySelector("#addToCart");
 button.addEventListener("click", addToCart);
 
-
-
 /**
  * Fonction pour ajouter le produit au panier
- * @returns 
+ * @returns
  */
 function addToCart() {
   const quantity = parseInt(document.querySelector("#quantity").value);
@@ -29,19 +27,20 @@ function addToCart() {
     return;
   }
   if (quantity > 100) {
-    alert("Quantité indiqué supérieure à 100 ! Veuillez indiqué une quantité entre 1 et 100 !")
-    return
+    alert(
+      "Quantité indiqué supérieure à 100 ! Veuillez indiqué une quantité entre 1 et 100 !"
+    );
+    return;
   }
   const cart = getCart();
 
   const cartItem = cart.find((p) => p.id === item.id && p.color === item.color);
   if (cartItem) {
     if (cartItem.quantity + item.quantity > 100) {
-      alert("Quantité totale de l'article supérieure à 100 !")
-      return
+      alert("Quantité totale de l'article supérieure à 100 !");
+      return;
     }
     cartItem.quantity += item.quantity;
-    
   } else {
     cart.push(item);
   }
@@ -79,11 +78,16 @@ function displayItemSelected(item) {
 }
 
 async function main() {
-  const r = await fetch(productLink, {
-    headers: {
-      Accept: "application/json",
-    },
-  });
-  const item = await r.json();
-  displayItemSelected(item);
+  try {
+    const r = await fetch(productLink, {
+      headers: {
+        Accept: "application/json",
+      },
+    });
+    const item = await r.json();
+    displayItemSelected(item);
+  } catch (error) {
+    console.log(error);
+    //window.location.href = "/index";
+  }
 }
