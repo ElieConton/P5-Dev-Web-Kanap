@@ -28,7 +28,7 @@ function addToCart() {
   }
   if (quantity > 100) {
     alert(
-      "Quantité indiqué supérieure à 100 ! Veuillez indiqué une quantité entre 1 et 100 !"
+      "Quantité indiquée supérieure à 100 ! Veuillez indiquer une quantité entre 1 et 100 !"
     );
     return;
   }
@@ -46,9 +46,12 @@ function addToCart() {
   }
 
   saveCart(cart);
+  alert('Ajouté au panier')
+  
 }
 
 main();
+
 
 /**
  * Crée du contenu text et HTML pour représenter l'objet sélectionné
@@ -78,7 +81,6 @@ function displayItemSelected(item) {
 }
 
 async function main() {
-  try {
     const r = await fetch(productLink, {
       headers: {
         Accept: "application/json",
@@ -86,8 +88,6 @@ async function main() {
     });
     const item = await r.json();
     displayItemSelected(item);
-  } catch (error) {
-    console.log(error);
-    //window.location.href = "/index";
-  }
+ 
 }
+

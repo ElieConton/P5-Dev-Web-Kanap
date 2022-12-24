@@ -52,8 +52,7 @@ form.addEventListener("submit", (e) => {
     try {
       const response = await r.json();
       const urlcommande =
-        "http://127.0.0.1:5500/front/html/confirmation.html?orderId=" +
-        response.orderId;
+      `./confirmation.html?orderId=${response.orderId}`
       saveCart([]);
       document.location.href = urlcommande;
     } catch (e) {
